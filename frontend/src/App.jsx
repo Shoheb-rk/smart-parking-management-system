@@ -21,7 +21,7 @@ function App() {
   useEffect(() => {
     // Connect WebSocket once when app loads
     const connect = () => {
-      const socket = new WebSocket('ws://10.113.109.96:8000/ws')
+      const socket = new WebSocket('ws://10.107.53.96:8000/ws')
 
       socket.onopen = () => {
         console.log('Global WebSocket connected')

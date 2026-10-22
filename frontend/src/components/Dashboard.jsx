@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useWS } from '../App'
 
-const API_URL = 'http://10.113.109.96:8000'
+const API_URL = 'http://10.107.53.96:8000'
 
 function Dashboard() {
   const [stats, setStats]     = useState(null)
