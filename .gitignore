@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+build/
+.vscode/
+.idea/
+*.log
+*.pt
+*.pth
+data/*.mp4

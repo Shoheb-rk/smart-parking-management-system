@@ -1,0 +1,13 @@
+{
+    "video_path": "data/parking_edited.mp4",
+    "display_size": [360, 640],
+    "slots": [
+        {"id": 1, "name": "62", "x1": 15, "y1": 53,  "x2": 175, "y2": 134, "variance_threshold": 2500},
+        {"id": 2, "name": "61", "x1": 17, "y1": 131, "x2": 176, "y2": 215, "variance_threshold": 2800},
+        {"id": 3, "name": "60", "x1": 16, "y1": 214, "x2": 174, "y2": 295, "variance_threshold": 4500},
+        {"id": 4, "name": "59", "x1": 18, "y1": 296, "x2": 177, "y2": 373, "variance_threshold": 3000},
+        {"id": 5, "name": "58", "x1": 14, "y1": 375, "x2": 173, "y2": 460, "variance_threshold": 3500},
+        {"id": 6, "name": "57", "x1": 16, "y1": 462, "x2": 172, "y2": 539, "variance_threshold": 4500},
+        {"id": 7, "name": "56", "x1": 13, "y1": 540, "x2": 172, "y2": 626, "variance_threshold": 1500}
+    ]
+}
