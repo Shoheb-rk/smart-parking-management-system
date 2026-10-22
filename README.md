@@ -1,52 +1,108 @@
 # AI-Powered Smart Parking Management System
 
-An AI-powered parking management system designed to detect parking slot occupancy using computer vision and provide a user-friendly interface for monitoring parking availability.
+A smart parking management system that uses computer vision to detect vehicles and monitor parking-space occupancy. The project combines YOLOv8 and OpenCV with a React dashboard and FastAPI backend to display parking availability and slot status.
 
-## Overview
+## Project Showcase
 
-This project combines computer vision, a Python backend, and a React frontend to support automated parking slot monitoring. The system uses YOLO-based object detection and OpenCV for visual processing, with backend components for handling application logic and parking-related data.
+### Live Parking Dashboard
+
+![Live Parking Dashboard](screenshots/live-map.png)
+
+### Computer Vision — Vehicle Detection
+
+![Vehicle and Parking-Slot Detection](screenshots/ai-detection.png)
 
 ## Features
 
-- **AI-Based Detection:** Uses YOLO and OpenCV for parking-related visual analysis.
-- **Parking Slot Configuration:** Stores parking slot coordinate information for occupancy analysis.
-- **Backend API:** Python backend built with FastAPI.
-- **Interactive Frontend:** React-based interface for displaying parking information.
-- **Database Integration:** Includes database-related components for managing application data.
+- **Vehicle Detection:** Uses YOLOv8 to detect vehicles in parking-lot footage.
+- **Hybrid Occupancy Detection:** Combines vehicle detection, background subtraction (MOG2), and frame differencing to analyze parking-space occupancy.
+- **Occupancy Persistence:** Uses persistence logic to reduce flickering in parking-slot status between frames.
+- **Parking-Slot Monitoring:** Tracks free, occupied, and reserved spaces.
+- **Live Dashboard:** Displays total capacity, available spaces, occupied spaces, reserved spaces, and occupancy percentage.
+- **WebSocket Updates:** Supports real-time communication between the backend and frontend.
+- **Parking Kiosk:** Provides an interface for parking-related user interactions.
+- **PostgreSQL Integration:** Stores application data in a relational database.
+- **QR-Code Generation:** Supports QR-code generation for the payment workflow.
+
+## Computer Vision Pipeline
+
+The system combines vehicle detection with background and frame-change information to determine parking-space occupancy.
+
+```text
+Parking-Lot Video
+        |
+        v
+   Frame Extraction
+        |
+        v
+   OpenCV Processing
+        |
+        +-------------------+
+        |                   |
+        v                   v
+      YOLOv8          Background Subtraction
+ Vehicle Detection          (MOG2)
+        |                   |
+        |             Frame Differencing
+        |                   |
+        +---------+---------+
+                  |
+                  v
+       Parking-Slot Occupancy
+              Analysis
+                  |
+                  v
+         Persistence Logic
+                  |
+                  v
+       Free / Occupied Status
+                  |
+                  v
+        FastAPI + WebSocket
+                  |
+                  v
+         React Dashboard
+```
 
 ## Tech Stack
 
-| Component | Technology |
+| Layer | Technologies |
 |---|---|
-| Frontend | React, JavaScript, Vite |
-| Backend | Python, FastAPI |
-| Computer Vision | OpenCV |
-| Object Detection | YOLOv8 |
-| Database | PostgreSQL *(if configured in the current version)* |
+| Programming Languages | Python, JavaScript |
+| Computer Vision | OpenCV, YOLOv8 |
+| Backend | FastAPI, Uvicorn |
+| Frontend | React, Vite, CSS |
+| Database | PostgreSQL |
+| Real-Time Communication | WebSockets |
+| Database Access | SQLAlchemy, Psycopg2 |
+| QR-Code Generation | `qrcode`, Pillow |
 
 ## Project Structure
 
 ```text
-smart_parking/
+smart-parking-management-system/
 ├── backend/
 │   ├── ai/
 │   │   ├── detector.py
-│   │   ├── find_coords.py
 │   │   ├── occupancy_detector.py
+│   │   ├── find_coords.py
 │   │   └── slot_config.json
 │   ├── database.py
 │   ├── main.py
 │   ├── models.py
 │   └── schemas.py
 ├── frontend/
-│   ├── public/
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── KioskView.jsx
+│   │   │   └── ParkingGrid.jsx
 │   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── package.json
-│   └── vite.config.js
-├── data/             # Local test videos; not tracked by Git
+│   │   └── config.js
+│   └── package.json
+├── screenshots/
+│   ├── live-map.png
+│   └── ai-detection.png
 ├── .gitignore
 └── README.md
 ```
@@ -55,8 +111,9 @@ smart_parking/
 
 ### Prerequisites
 
-- Python 3
+- Python 3.13
 - Node.js and npm
+- PostgreSQL
 - Git
 
 ### 1. Clone the Repository
@@ -66,34 +123,49 @@ git clone https://github.com/Shoheb-rk/smart-parking-management-system.git
 cd smart-parking-management-system
 ```
 
-### 2. Set Up the Backend
+### 2. Configure PostgreSQL
 
-Create and activate a Python virtual environment.
+Create a PostgreSQL database named `spm` if it does not already exist.
 
-**Windows PowerShell:**
+In PowerShell, set the database connection string:
+
+```powershell
+$env:DATABASE_URL = "postgresql://postgres:YOUR_PASSWORD@localhost:5432/spm"
+```
+
+Replace `YOUR_PASSWORD` with your local PostgreSQL password. Do not commit database credentials to Git.
+
+### 3. Set Up the Python Environment
+
+From the project root, create and activate a virtual environment:
 
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-Install the backend dependencies:
+Install the backend dependencies required by the project. If you add a `requirements.txt` file, use it to install the dependencies.
+
+The computer-vision pipeline also requires the YOLOv8 model weights and the relevant parking-slot configuration and video inputs.
+
+### 4. Start the Backend
+
+From the project root:
 
 ```powershell
-pip install -r requirements.txt
+cd backend
+python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-If a `requirements.txt` file is not yet available, create one containing the project's actual Python dependencies before following this step.
+Open the API documentation at:
 
-Start the backend using the entry point configured by your application. For example, if `backend/main.py` exposes a FastAPI instance named `app`:
+[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-```powershell
-uvicorn backend.main:app --reload
-```
+Keep the backend terminal running.
 
-### 3. Set Up the Frontend
+### 5. Start the Frontend
 
-Open a second terminal:
+Open a second terminal from the project root:
 
 ```powershell
 cd frontend
@@ -101,29 +173,32 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite in your terminal.
+Open the local URL printed by Vite.
 
-## Configuration
+To make the frontend accessible from other devices on the same network, run:
 
-- Configure database connection settings using environment variables.
-- Keep credentials and API keys out of source control.
-- Obtain any required YOLO model weights separately; model files are excluded from this repository.
-- Provide the required parking video or camera input locally.
+```powershell
+npm run dev -- --host 0.0.0.0
+```
+
+Ensure the frontend API configuration points to the correct backend address for your environment.
+
+## Configuration and Security
+
+- Set `DATABASE_URL` through an environment variable.
+- Do not commit database passwords, API keys, or other secrets.
+- Keep virtual environments, dependency folders, and large local video or model files out of Git.
+- Configure the backend and frontend appropriately for the environment in which they run.
 
 ## Future Improvements
 
-- Improve parking slot occupancy detection and accuracy.
-- Add real-time camera integration.
-- Enhance parking availability visualization.
-- Improve error handling and database integration.
-- Add testing and deployment support.
+- License-plate recognition.
+- Automated vehicle entry and exit tracking.
+- Improved shadow handling and detection accuracy.
+- Historical occupancy analytics and usage reports.
+- Integration with a production payment gateway.
+- Cloud deployment for remote parking management.
 
 ## Author
 
-**Shoheb Khanadal**
-
-GitHub: [Shoheb-rk](https://github.com/Shoheb-rk)
-
----
-
-*This project is being developed to explore computer vision and AI-assisted parking management.*
+**Shoheb** — [GitHub Profile](https://github.com/Shoheb-rk)
